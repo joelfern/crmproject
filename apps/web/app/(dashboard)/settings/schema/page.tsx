@@ -5,9 +5,9 @@ import { Button } from "@/components/ui/button";
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
+    CardDescription,
 } from "@/components/ui/card";
 import {
     Select,
@@ -36,6 +36,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus, Trash2, Pencil } from "lucide-react";
+import { RoleGuard } from "@/components/auth/role-guard";
+import { Role } from "@/hooks/use-role";
 
 // Mock data for schema
 const initialSchema = {
@@ -63,6 +65,14 @@ const initialSchema = {
 };
 
 export default function SchemaBuilderPage() {
+    return (
+        <RoleGuard allowedRoles={[Role.ADMIN]}>
+            <SchemaBuilderContent />
+        </RoleGuard>
+    );
+}
+
+function SchemaBuilderContent() {
     const [selectedObject, setSelectedObject] = useState("Account");
     const [schema, setSchema] = useState(initialSchema);
     const [isDialogOpen, setIsDialogOpen] = useState(false);

@@ -6,9 +6,13 @@ import { cn } from "@/lib/utils";
 import {
     LayoutDashboard,
     Users,
-    Contact,
+    Briefcase,
+    FileText,
     Settings,
     Building2,
+    Contact,
+    MessageSquare,
+    Shield,
 } from "lucide-react";
 
 const routes = [
@@ -38,21 +42,21 @@ const routes = [
     },
     {
         label: "Opportunities",
-        icon: LayoutDashboard, // Placeholder icon, maybe change later
+        icon: Briefcase,
         href: "/opportunities",
         color: "text-emerald-500",
     },
     {
         label: "Quotes",
-        icon: Settings, // Placeholder icon
+        icon: FileText,
         href: "/quotes",
         color: "text-green-700",
     },
     {
         label: "Cases",
-        icon: Settings, // Placeholder icon
+        icon: MessageSquare,
         href: "/cases",
-        color: "text-red-700",
+        color: "text-gray-500",
     },
     {
         label: "Settings",

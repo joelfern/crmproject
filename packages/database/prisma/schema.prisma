@@ -8,32 +8,65 @@ datasource db {
 }
 
 model Tenant {
-  id            String        @id @default(uuid())
-  name          String
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  users         User[]
-  accounts      Account[]
-  contacts      Contact[]
-  leads         Lead[]
-  opportunities Opportunity[]
-  quotes        Quote[]
-  cases         Case[]
+  id                String             @id @default(cuid())
+  name              String
+  users             User[]
+  contacts          Contact[]
+  groups            Group[]
+  identityProviders IdentityProvider[]
+  quotes            Quote[]
+  cases             Case[]
+  leads             Lead[]
+  opportunities     Opportunity[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 
   @@map("tenants")
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  name      String?
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String?
+  role        Role     @default(USER)
+  permissions Json?
+  groups      Group[]
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Group {
+  id        String   @id @default(cuid())
+  name      String
+  users     User[]
   tenantId  String
   tenant    Tenant   @relation(fields: [tenantId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@map("users")
 }
+
+model IdentityProvider {
+  id           String   @id @default(cuid())
+  name         String
+  type         String
+  domain       String
+  clientId     String
+  clientSecret String
+  tenantId     String
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
 
 model Account {
   id            String        @id @default(uuid())
