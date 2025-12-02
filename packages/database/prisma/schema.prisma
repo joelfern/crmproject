@@ -1,0 +1,174 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Tenant {
+  id            String        @id @default(uuid())
+  name          String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  users         User[]
+  accounts      Account[]
+  contacts      Contact[]
+  leads         Lead[]
+  opportunities Opportunity[]
+  quotes        Quote[]
+  cases         Case[]
+
+  @@map("tenants")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Account {
+  id            String        @id @default(uuid())
+  name          String
+  industry      String?
+  website       String?
+  phone         String?
+  type          String?
+  annualRevenue Decimal?
+  numberOfEmployees Int?
+  billingAddress String?
+  shippingAddress String?
+  description   String?
+  metadata      Json?
+  tenantId      String
+  tenant        Tenant        @relation(fields: [tenantId], references: [id])
+  contacts      Contact[]
+  opportunities Opportunity[]
+  cases         Case[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@map("accounts")
+}
+
+model Contact {
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String?
+  phone     String?
+  title     String?
+  department String?
+  mailingAddress String?
+  birthdate DateTime?
+  doNotCall Boolean @default(false)
+  emailOptOut Boolean @default(false)
+  description String?
+  metadata  Json?
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  accountId String?
+  account   Account? @relation(fields: [accountId], references: [id])
+  cases     Case[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contacts")
+}
+
+model Lead {
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  company   String?
+  email     String?
+  phone     String?
+  status    String   @default("NEW")
+  source    String?
+  title     String?
+  industry  String?
+  annualRevenue Decimal?
+  rating    String?
+  address   String?
+  description String?
+  metadata  Json?
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("leads")
+}
+
+model Opportunity {
+  id          String   @id @default(uuid())
+  title       String
+  amount      Decimal
+  stage       String
+  type        String?
+  leadSource  String?
+  nextStep    String?
+  closeDate   DateTime?
+  probability Int?
+  description String?
+  metadata    Json?
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  accountId   String
+  account     Account  @relation(fields: [accountId], references: [id])
+  quotes      Quote[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("opportunities")
+}
+
+model Quote {
+  id            String      @id @default(uuid())
+  quoteNumber   String
+  totalAmount   Decimal
+  status        String      @default("DRAFT")
+  validUntil    DateTime?
+  billingAddress String?
+  shippingAddress String?
+  description   String?
+  metadata      Json?
+  tenantId      String
+  tenant        Tenant      @relation(fields: [tenantId], references: [id])
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id])
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@map("quotes")
+}
+
+model Case {
+  id          String   @id @default(uuid())
+  subject     String
+  description String?
+  status      String   @default("NEW")
+  priority    String   @default("MEDIUM")
+  origin      String?
+  type        String?
+  reason      String?
+  metadata    Json?
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  accountId   String?
+  account     Account? @relation(fields: [accountId], references: [id])
+  contactId   String?
+  contact     Contact? @relation(fields: [contactId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("cases")
+}
